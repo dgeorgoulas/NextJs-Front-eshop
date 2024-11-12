@@ -1,10 +1,13 @@
+'use client'
 import React from "react"
 import { useState,useEffect } from 'react';
 import { GoHeartFill,GoHeart } from "react-icons/go";
 import { RiArrowRightFill } from "react-icons/ri";
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import axios from 'axios';
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import StarView from "./components/starView"
+
 
 
 
@@ -13,6 +16,7 @@ const Products=({products,userData}) =>{
     const url="http://localhost:8080"
     const [likedProducts, setLikedProducts] = useState([]);
     const [likedCartProducts, setLikedCartProducts] = useState([]);
+    const [isProductPage,setisProductPage]=useState(true)
     
    const [hoveredProduct, setHoveredProduct] = useState(null)
    const [hoveredImage, setHoveredImage] = useState(null)
@@ -150,6 +154,29 @@ const Products=({products,userData}) =>{
      
      
    }
+
+
+
+
+
+  const handleProductClick = (product) => {
+
+      const params = new URLSearchParams();
+      params.set("id", product.id);
+      params.set("name", product.name);
+      params.set("price", product.price);
+      params.set("image", product.image);
+      
+      
+      router.push(`/single?${params.toString()}`);
+
+  
+
+      
+    
+   
+  }
+
     
 
 
@@ -266,6 +293,7 @@ const Products=({products,userData}) =>{
                 src={`${url}${product.image}`}
                 alt={product.name}
                 className="w-full h-full object-cover rounded-lg"
+                onClick={() => handleProductClick(product)}
                 onMouseEnter={() => {setHoveredImage(product.id)
                   setClicking(product.id)
                 }
@@ -310,6 +338,7 @@ const Products=({products,userData}) =>{
             </div>
             <h3 className="text-lg font-semibold mt-2">{product.name}</h3>
             <p>{product.price}</p>
+            <StarView product={product} />
           </div>
         );
       })}
@@ -398,13 +427,13 @@ const Products=({products,userData}) =>{
       <div className="grid grid-cols-4 gap-4">
     {products.slice(currentIndex + 14, currentIndex + 14 + itemsToShow).map((product) => {
       
-
       const isLiked = likedCartProducts.includes(product.id);
       const isHovered = hoveredProduct === product.id;
 
       return (
         <div key={product.id} className="border p-4 rounded-lg shadow-lg relative">
           <div className="relative w-full h-48">
+
             <img
               src={`${url}${product.image}`}
               alt={product.name}
